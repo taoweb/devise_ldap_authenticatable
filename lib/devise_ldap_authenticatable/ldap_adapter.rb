@@ -6,11 +6,11 @@ module Devise
   # ::Devise.ldap_host
   module LdapAdapter
     def self.valid_credentials?(login, attributes, password)
-      active_directory_binding(login, password) || openldap_binding(login, password)
+      active_directory_binding(login, attributes, password) || openldap_binding(login, attributes, password)
     end
 
     private
-    def self.active_directory_binding(login, password)
+    def self.active_directory_binding(login, attributes, password)
       login = "#{login}@#{::Devise.ldap_base_dn.gsub(/(.+,dc=)/, '')}"
       @encryption = ::Devise.ldap_ssl ? :simple_tls : nil
       ldap = Net::LDAP.new(:encryption => @encryption, :base => ::Devise.ldap_base_dn)
@@ -20,7 +20,7 @@ module Devise
       ldap.bind
     end
 
-    def self.openldap_binding(login, password)
+    def self.openldap_binding(login, attributes, password)
       login = "#{::Devise.ldap_login_attribute}=#{login},"
       login += "#{attributes}," unless attributes.nil?
       login += ::Devise.ldap_base_dn
