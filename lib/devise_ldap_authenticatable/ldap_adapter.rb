@@ -10,7 +10,7 @@ module Devise
     end
 
     private
-    def active_directory_binding
+    def self.active_directory_binding
       login = "#{login}@#{::Devise.ldap_base_dn.gsub(/(.+,dc=)/, '')}"
       @encryption = ::Devise.ldap_ssl ? :simple_tls : nil
       ldap = Net::LDAP.new(:encryption => @encryption, :base => ::Devise.ldap_base_dn)
@@ -20,7 +20,7 @@ module Devise
       ldap.bind
     end
 
-    def openldap_binding
+    def self.openldap_binding
       login = "#{::Devise.ldap_login_attribute}=#{login},"
       login += "#{attributes}," unless attributes.nil?
       login += ::Devise.ldap_base_dn
